@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "544522999240",
+    "project_id": "chat-51ff9",
+    "storage_bucket": "chat-51ff9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544522999240:android:0a4532aa8595f95ceb9cfd",
+        "android_client_info": {
+          "package_name": "com.kognitivist.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "544522999240-rdblbttm00ea7kdfbgs4io342sah418e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByX79spIkTlGhYgOQ9Csl3XJHWin-6jp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "544522999240-rdblbttm00ea7kdfbgs4io342sah418e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
