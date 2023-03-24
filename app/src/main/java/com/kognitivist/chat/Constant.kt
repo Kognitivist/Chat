@@ -1,17 +1,20 @@
 package com.kognitivist.chat
 
 import com.kognitivist.chat.data.database.DataBaseRepository
+import com.kognitivist.chat.data.models.Chat
 
 
 const val FIREBASE_ID = "firebaseId"
+const val MY_ID = "myId"
 const val NAME_SENDER = "nameSender"
 const val MAIL_SENDER = "mailSender"
 const val NAME_RECIPIENT = "nameRecipient"
 const val MAIL_RECIPIENT = "mailRecipient"
 const val MESSAGE = "message"
+const val MESSAGES = "messages"
 
-const val NOTE_DATABASE = "note_database"
-const val NOTES_TABLE = "notes_table"
+const val NAME_CHAT = "name"
+const val MAIL_CHAT = "mail"
 
 
 const val ADD_NOTE = "Add Note"
@@ -30,5 +33,6 @@ const val LOG_IN_TEXT = "Login"
 const val PASSWORD_TEXT = "Password"
 
 lateinit var REPOSITORY: DataBaseRepository
-lateinit var LOGIN: String
-lateinit var PASSWORD: String
+lateinit var CHAT_ID: Chat
+
+

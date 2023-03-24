@@ -1,5 +1,6 @@
 package com.kognitivist.chat.data.database
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -7,26 +8,32 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.kognitivist.chat.data.models.Message
+import com.kognitivist.chat.REPOSITORY
+import com.kognitivist.chat.data.models.Chat
 
-class AllMessageLiveData: LiveData<List<Message>>() {
+class AllChatsCurrentUserLiveData: LiveData<Set<Chat>>() {
     private val mAuth = FirebaseAuth.getInstance()
-    private val dataBase = Firebase.database.reference.
-    child(mAuth.currentUser?.uid.toString())
+    private val dataBase = Firebase.database.reference
 
 
     private val listener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            val messages = mutableListOf<Message>()
+            val allChats = mutableListOf<Chat>()
+            val myChats = mutableSetOf<Chat>()
             snapshot.children.map {
-                messages.add(it.getValue(Message::class.java) ?: Message())
+                allChats.add(it.getValue(Chat::class.java) ?: Chat())
+                for (chat in allChats){
+                    Log.d("MyLogChats","$chat")
+                    if (REPOSITORY.currentUser?.email.toString() in chat.myId){
+                        myChats.add(chat)
+                    }
+                }
             }
-            value = messages
+            value = myChats
         }
 
         override fun onCancelled(error: DatabaseError) {
         }
-
     }
 
     override fun onActive() {

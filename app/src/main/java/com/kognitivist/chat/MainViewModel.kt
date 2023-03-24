@@ -7,30 +7,69 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kognitivist.chat.data.database.FirebaseRepository
+import com.kognitivist.chat.data.models.Chat
 import com.kognitivist.chat.data.models.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
-    val context = application
+    private val context = application
 
-    fun initDataBase(onSuccess: () -> Unit) {
-        REPOSITORY = FirebaseRepository()
-        REPOSITORY.connectToDataBase(
-            {onSuccess()},
-            { Log.d("mylog","Error: ${it}")}
-        )
+    fun getMailUser(): String{
+        REPOSITORY = FirebaseRepository(context = context)
+        return REPOSITORY.currentUser?.email ?: "null"
     }
-    fun addMessage(message: Message, onSuccess: () -> Unit){
+
+    fun enterDataBase(login: String, password: String, onSuccess: () -> Unit) {
+        viewModelScope.launch (Dispatchers.IO){
+            REPOSITORY = FirebaseRepository(context = context)
+            REPOSITORY.enterToDataBase(
+                login = login,
+                password = password,
+                onSuccess = { onSuccess() },
+                onFail = { Log.d("mylog","Error: ${it}") }
+            )
+        }
+    }
+
+    fun registrationOfDataBase(login: String, password: String, onSuccess: () -> Unit) {
+        viewModelScope.launch (Dispatchers.IO) {
+            REPOSITORY = FirebaseRepository(context = context)
+            REPOSITORY.registrationAndEnterOfDataBases(
+                login,
+                password,
+                {onSuccess()},
+                { Log.d("mylog","Error: ${it}")}
+            )
+        }
+    }
+
+    fun addMessage(chat: Chat, message: Message, onSuccess: () -> Unit){
         viewModelScope.launch(Dispatchers.IO) {
-            REPOSITORY.create(message = message){
+            REPOSITORY.createMessage(chat = chat, message = message){
                 viewModelScope.launch(Dispatchers.Main) {
                     onSuccess()
                 }
             }
         }
     }
-    fun readAllNotes() = REPOSITORY.readAll
+
+    fun addChat(chat: Chat, onSuccess: () -> Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            REPOSITORY.createChat(chat = chat){
+                viewModelScope.launch(Dispatchers.Main) {
+                    onSuccess()
+                }
+            }
+        }
+    }
+
+    fun readAllMessages() = REPOSITORY.readAllMessage
+    fun readAllChatCurrentUser() = REPOSITORY.readAllChatCurrentUser
+
+
+
 
     fun deleteNote(message: Message, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO){
@@ -56,3 +95,4 @@ class MainViewModelFactory(private val application: Application): ViewModelProvi
         throw java.lang.IllegalArgumentException("Unknown ViewModel Class")
     }
 }
+
