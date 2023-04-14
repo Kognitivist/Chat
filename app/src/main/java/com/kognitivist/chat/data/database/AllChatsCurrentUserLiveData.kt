@@ -8,8 +8,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.kognitivist.chat.REPOSITORY
-import com.kognitivist.chat.data.models.Chat
+import com.kognitivist.chat.tools.REPOSITORY
+import com.kognitivist.chat.domain.models.Chat
 
 class AllChatsCurrentUserLiveData: LiveData<Set<Chat>>() {
     private val mAuth = FirebaseAuth.getInstance()
@@ -24,7 +24,10 @@ class AllChatsCurrentUserLiveData: LiveData<Set<Chat>>() {
                 allChats.add(it.getValue(Chat::class.java) ?: Chat())
                 for (chat in allChats){
                     Log.d("MyLogChats","$chat")
-                    if (REPOSITORY.currentUser?.email.toString() in chat.myId){
+                    if (REPOSITORY.currentUser?.email.toString() == chat.mailCompanionFirst){
+                        myChats.add(chat)
+                    }
+                    if (REPOSITORY.currentUser?.email.toString() == chat.mailCompanionSecond){
                         myChats.add(chat)
                     }
                 }

@@ -5,16 +5,12 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.kognitivist.chat.*
-import com.kognitivist.chat.data.models.Chat
-import com.kognitivist.chat.data.models.Message
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.kognitivist.chat.domain.interface_database_repository.DataBaseRepository
+import com.kognitivist.chat.domain.models.Chat
+import com.kognitivist.chat.domain.models.Message
+import com.kognitivist.chat.tools.*
 
 class FirebaseRepository (val context: Context): DataBaseRepository {
 
@@ -54,9 +50,9 @@ class FirebaseRepository (val context: Context): DataBaseRepository {
         val mapChat = hashMapOf<String,Any?>()
 
         mapChat[FIREBASE_ID] = chatId
-        mapChat[MY_ID] = chat.myId
+        mapChat[MAIL_COMPANION_SECOND] = chat.mailCompanionSecond
         mapChat[NAME_CHAT] = chat.name
-        mapChat[MAIL_CHAT] = chat.mail
+        mapChat[MAIL_COMPANION_FIRST] = chat.mailCompanionFirst
         mapChat[MESSAGES] = chat.messages
 
 
@@ -64,18 +60,12 @@ class FirebaseRepository (val context: Context): DataBaseRepository {
         dataBase.child(chat.name).updateChildren(mapChat)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener {  }
-
     }
 
 
 
 
-    override suspend fun delete(message: Message, onSuccess: () -> Unit) {
-        val messageId = message.firebaseId
-
-        dataBase.child(messageId).removeValue()
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener {  }
+    override suspend fun deleteChat(chat: Chat, onSuccess: () -> Unit) {
 
     }
 
@@ -83,8 +73,8 @@ class FirebaseRepository (val context: Context): DataBaseRepository {
         mAuth.signOut()
     }
 
-    override suspend fun enterToDataBase(login: String, password: String, onSuccess: ()-> Unit, onFail: (String)-> Unit) {
-        mAuth.signInWithEmailAndPassword(login, password)
+    override suspend fun enterToDataBase(mail: String, password: String, onSuccess: ()-> Unit, onFail: (String)-> Unit) {
+        mAuth.signInWithEmailAndPassword(mail, password)
             .addOnSuccessListener {
                 //Toast.makeText(context, "Вы вошли ", Toast.LENGTH_LONG).show()
             }
@@ -93,8 +83,8 @@ class FirebaseRepository (val context: Context): DataBaseRepository {
             }
     }
 
-    override suspend fun registrationAndEnterOfDataBases(login: String, password: String, onSuccess: () -> Unit, onFail: (String) -> Unit) {
-        mAuth.createUserWithEmailAndPassword(login, password)
+    override suspend fun registrationAndEnterOfDataBases(mail: String, password: String, onSuccess: () -> Unit, onFail: (String) -> Unit) {
+        mAuth.createUserWithEmailAndPassword(mail, password)
             .addOnSuccessListener {
                 /*currentUser?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName("Пирожок").build())*/
                 if (mAuth.currentUser?.email != null){

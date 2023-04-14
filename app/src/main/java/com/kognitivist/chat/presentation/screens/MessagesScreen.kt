@@ -1,12 +1,7 @@
-package com.kognitivist.chat.screens
+package com.kognitivist.chat.presentation.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.FlingBehavior
-import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,21 +17,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kognitivist.chat.CHAT_ID
-import com.kognitivist.chat.EMPTY
-import com.kognitivist.chat.MainViewModel
-import com.kognitivist.chat.data.models.Chat
-import com.kognitivist.chat.data.models.Message
-import com.kognitivist.chat.ui.theme.myMessage
-import com.kognitivist.chat.ui.theme.notMyMessage
+import androidx.navigation.NavHostController
+import com.kognitivist.chat.tools.CHAT_ID
+import com.kognitivist.chat.tools.EMPTY
+import com.kognitivist.chat.presentation.MainViewModel
+import com.kognitivist.chat.domain.models.Message
+import com.kognitivist.chat.presentation.ui.theme.myMessage
+import com.kognitivist.chat.presentation.ui.theme.notMyMessage
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MessagesScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
+fun MessagesScreen (viewModel: MainViewModel, navigator: NavHostController) {
 
     val scaffoldState = rememberScaffoldState()
     val message = remember { mutableStateOf(EMPTY) }
@@ -70,9 +64,9 @@ fun MessagesScreen (viewModel: MainViewModel, navigation: MutableState<String>) 
             verticalArrangement = Arrangement.Center
         ) {
             LazyColumn(
-                verticalArrangement = Arrangement.SpaceAround,
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                contentPadding = PaddingValues(5.dp),
+                contentPadding = PaddingValues(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)) {
@@ -108,7 +102,7 @@ fun MessagesScreen (viewModel: MainViewModel, navigation: MutableState<String>) 
                             Message(
                                 nameSender = viewModel.getMailUser()?: "",
                                 mailSender = viewModel.getMailUser()?: "",
-                                mailRecipient = CHAT_ID.mail,
+                                mailRecipient = CHAT_ID.mailCompanionFirst,
                                 nameRecipient = CHAT_ID.name,
                                 message = message.value)
                         ){}

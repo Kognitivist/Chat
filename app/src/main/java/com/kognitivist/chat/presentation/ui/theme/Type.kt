@@ -1,4 +1,4 @@
-package com.kognitivist.chat.ui.theme
+package com.kognitivist.chat.presentation.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,4 +1,4 @@
-package com.kognitivist.chat.data.models
+package com.kognitivist.chat.domain.models
 
 
 data class Message (

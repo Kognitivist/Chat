@@ -1,4 +1,4 @@
-package com.kognitivist.chat
+package com.kognitivist.chat.presentation
 
 import android.app.Application
 import android.util.Log
@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kognitivist.chat.data.database.FirebaseRepository
-import com.kognitivist.chat.data.models.Chat
-import com.kognitivist.chat.data.models.Message
+import com.kognitivist.chat.domain.models.Chat
+import com.kognitivist.chat.domain.models.Message
+import com.kognitivist.chat.tools.REPOSITORY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
     private val context = application
@@ -21,11 +21,11 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         return REPOSITORY.currentUser?.email ?: "null"
     }
 
-    fun enterDataBase(login: String, password: String, onSuccess: () -> Unit) {
+    fun enterDataBase(mail: String, password: String, onSuccess: () -> Unit) {
         viewModelScope.launch (Dispatchers.IO){
             REPOSITORY = FirebaseRepository(context = context)
             REPOSITORY.enterToDataBase(
-                login = login,
+                mail = mail,
                 password = password,
                 onSuccess = { onSuccess() },
                 onFail = { Log.d("mylog","Error: ${it}") }
@@ -33,12 +33,12 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun registrationOfDataBase(login: String, password: String, onSuccess: () -> Unit) {
+    fun registrationOfDataBase(mail: String, password: String, onSuccess: () -> Unit) {
         viewModelScope.launch (Dispatchers.IO) {
             REPOSITORY = FirebaseRepository(context = context)
             REPOSITORY.registrationAndEnterOfDataBases(
-                login,
-                password,
+                mail = mail,
+                password = password,
                 {onSuccess()},
                 { Log.d("mylog","Error: ${it}")}
             )
@@ -71,15 +71,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
 
 
-    fun deleteNote(message: Message, onSuccess: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO){
-            REPOSITORY.delete(message = message){
-                viewModelScope.launch(Dispatchers.Main) {
-                    onSuccess()
-                }
-            }
-        }
-    }
+
     fun signOut(onSuccess: () -> Unit){
         REPOSITORY.signOut()
         onSuccess()

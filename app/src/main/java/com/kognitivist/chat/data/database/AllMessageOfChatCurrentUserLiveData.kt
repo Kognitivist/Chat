@@ -7,9 +7,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.kognitivist.chat.CHAT_ID
-import com.kognitivist.chat.MESSAGES
-import com.kognitivist.chat.data.models.Message
+import com.kognitivist.chat.tools.CHAT_ID
+import com.kognitivist.chat.tools.MESSAGES
+import com.kognitivist.chat.domain.models.Message
 
 class AllMessageOfChatCurrentUserLiveData: LiveData<List<Message>>() {
     private val mAuth = FirebaseAuth.getInstance()

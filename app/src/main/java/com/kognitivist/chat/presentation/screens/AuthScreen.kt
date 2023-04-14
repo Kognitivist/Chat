@@ -1,4 +1,4 @@
-package com.kognitivist.chat.screens
+package com.kognitivist.chat.presentation.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -11,9 +11,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.kognitivist.chat.*
+import com.kognitivist.chat.domain.navigation.Navigation
+import com.kognitivist.chat.presentation.MainViewModel
+import com.kognitivist.chat.tools.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,11 +26,13 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
+fun AuthScreen (viewModel: MainViewModel, navigator: NavHostController) {
 
     val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val coroutineScope = rememberCoroutineScope()
-    val login = remember { mutableStateOf("qwerty@mail.ru") }
+    val firstNameUser = remember { mutableStateOf("Pavel") }
+    val lastNameUser = remember { mutableStateOf("Teslenko") }
+    val mail = remember { mutableStateOf("qwerty@mail.ru") }
     val password = remember { mutableStateOf("qwerty") }
 
     val scaffoldState = rememberScaffoldState()
@@ -33,12 +40,11 @@ fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
     val openDialog = remember { mutableStateOf(false) }
 
 
-    Log.d("MuLog", viewModel.getMailUser())
 
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = {},
-            title = { Text(text = "Подождите") },
+            title = { Text(text = "Подождите", textAlign = TextAlign.Center) },
             text = {
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -69,10 +75,22 @@ fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                     OutlinedTextField(
-                        value = login.value,
-                        onValueChange = { login.value = it },
-                        label = { Text(text = LOG_IN_TEXT) },
-                        isError = login.value.isEmpty()
+                        value = firstNameUser.value,
+                        onValueChange = { firstNameUser.value = it },
+                        label = { Text(text = MAIL) },
+                        isError = firstNameUser.value.isEmpty()
+                    )
+                    OutlinedTextField(
+                        value = lastNameUser.value,
+                        onValueChange = { lastNameUser.value = it },
+                        label = { Text(text = MAIL) },
+                        isError = lastNameUser.value.isEmpty()
+                    )
+                    OutlinedTextField(
+                        value = mail.value,
+                        onValueChange = { mail.value = it },
+                        label = { Text(text = MAIL) },
+                        isError = mail.value.isEmpty()
                     )
                     OutlinedTextField(
                         value = password.value,
@@ -89,7 +107,7 @@ fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
                                         launch(Dispatchers.IO) { openDialog.value = true }.join()
                                         launch(Dispatchers.IO) {
                                             viewModel.registrationOfDataBase(
-                                                login = login.value,
+                                                mail = mail.value,
                                                 password = password.value
                                             ) {}
                                         }.join()
@@ -97,17 +115,16 @@ fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
                                             while (viewModel.getMailUser() == "null") {
                                                 delay(1000)
                                                 viewModel.enterDataBase(
-                                                    login = login.value,
+                                                    mail = mail.value,
                                                     password = password.value,
                                                 ) {}
-                                                Log.d("registration", viewModel.getMailUser())
                                             }
                                         }.join()
                                         openDialog.value = false
                                         if (viewModel.getMailUser() != "null") {
-                                            navigation.value = "Chat Screen"
-                                        } else {
-                                            navigation.value = "Auth Screen"
+                                            navigator.navigate(route = Navigation.ChatsScreen.route){
+                                                popUpTo(route = Navigation.AuthScreen.route){inclusive = true}
+                                            }
                                         }
                                     }
 
@@ -119,16 +136,16 @@ fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
                                             while (viewModel.getMailUser() == "null") {
                                                 delay(1000)
                                                 viewModel.enterDataBase(
-                                                    login = login.value,
+                                                    mail = mail.value,
                                                     password = password.value,
                                                 ) {}
                                             }
                                         }.join()
                                         openDialog.value = false
                                         if (viewModel.getMailUser() != "null") {
-                                            navigation.value = "Chat Screen"
-                                        } else {
-                                            navigation.value = "Auth Screen"
+                                            navigator.navigate(route = Navigation.ChatsScreen.route){
+                                                popUpTo(route = Navigation.AuthScreen.route){inclusive = true}
+                                            }
                                         }
                                     }
                                 }
@@ -136,7 +153,7 @@ fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
                             }
 
                         },
-                        enabled = login.value.isNotEmpty() && password.value.isNotEmpty()
+                        enabled = mail.value.isNotEmpty() && password.value.isNotEmpty()
                     ) {
                         Text(text = textButtonEnter.value)
                     }
@@ -221,4 +238,6 @@ fun AuthScreen (viewModel: MainViewModel, navigation: MutableState<String>) {
 
     }
 }
+
+
 
